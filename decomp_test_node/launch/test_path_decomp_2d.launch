@@ -6,6 +6,8 @@
     <param name="bag_file" value="$(find decomp_test_node)/data/simple.bag"/>
     <param name="bag_topic" value="/cloud"/>
     <param name="path_file" value="$(find decomp_test_node)/data/path2d.txt"/>
+    <param name="seed_file" value="$(find decomp_test_node)/data/seeds_test.txt"/>
+    <param name="bag_marker" value="/mob/mapper/zones"/>
   </node>
 
 </launch>

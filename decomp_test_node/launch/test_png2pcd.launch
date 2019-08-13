@@ -1,0 +1,10 @@
+<launch>
+
+  <node pkg="decomp_test_node"
+    type="png2pcd_test"
+    name="png2pcd_test"
+    output="screen"
+    args="/home/yash/optimal_pattern/source/shape_simple_5.png /home/yash/optimal_pattern/source/shape_simple_5.png new.pcd">
+  </node>
+
+</launch>

@@ -17,16 +17,9 @@
 
 std_msgs::Header header_;
 
-// void pointCloudCallback(const std_msgs::String::ConstPtr& msg)
-// {
-//   ROS_INFO("I heard: ");
-// }
-
 int main(int argc, char ** argv){
   ros::init(argc, argv, "test");
   ros::NodeHandle nh("~");
-
-  ros::Publisher cloud_pub_new = nh.advertise<sensor_msgs::PointCloud>("cloud_my_pcl", 1, true);
 
   ros::Publisher cloud_pub = nh.advertise<sensor_msgs::PointCloud>("cloud", 1, true);
   ros::Publisher path_pub = nh.advertise<nav_msgs::Path>("path", 1, true);
@@ -43,29 +36,7 @@ int main(int argc, char ** argv){
   cloud.header.frame_id = "map";
   cloud_pub.publish(cloud);
 
-  ROS_INFO("published the old cloud ");
- 
-  //pcl::PointCloud::Ptr object_cloud;
-  //reading point cloud data from a file, and then running decomputils
-
-  sensor_msgs::PointCloud object_msg_one;
-
-  sensor_msgs::PointCloud2 object_msg;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr object_cloud;
-  object_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
-  if (pcl::io::loadPCDFile<pcl::PointXYZRGB> ("/home/yash/grand_pcl_project/build/new_pcd.pcd", *object_cloud) == -1) //* load the file
-  {
-    PCL_ERROR ("Couldn't read file pcd file \n");
-    return (-1);
-  }
-  pcl::toROSMsg(*object_cloud.get(), object_msg);
-  object_msg.header.frame_id = "map";
-
-  sensor_msgs::convertPointCloud2ToPointCloud(object_msg, object_msg_one);
-  cloud_pub_new.publish(object_msg_one);
-
   vec_Vec3f obs = DecompROS::cloud_to_vec(cloud);
-  vec_Vec3f obs_new = DecompROS::cloud_to_vec(object_msg_one);
   
   vec_Vec2f obs2d;
   for(const auto& it: obs)
@@ -96,26 +67,6 @@ int main(int argc, char ** argv){
   poly_pub.publish(poly_msg);
 
 
-  //Convert to inequality constraints Ax < b
-  auto polys = decomp_util.get_polyhedrons();
-  for(size_t i = 0; i < path.size() - 1; i++) {
-    const auto pt_inside = (path[i] + path[i+1]) / 2;
-    LinearConstraint2D cs(pt_inside, polys[i].hyperplanes());
-    printf("i: %zu\n", i);
-    std::cout << "A: " << cs.A() << std::endl;
-    std::cout << "b: " << cs.b() << std::endl;
-
-    std::cout << "point: " << path[i].transpose();
-    if(cs.inside(path[i]))
-      std::cout << " is inside!" << std::endl;
-    else
-      std::cout << " is outside!" << std::endl;
-    std::cout << "point: " << path[i+1].transpose();
-    if(cs.inside(path[i+1]))
-      std::cout << " is inside!" << std::endl;
-    else
-      std::cout << " is outside!" << std::endl;
-  }
 
 #if 1
   
@@ -248,18 +199,6 @@ int main(int argc, char ** argv){
   poly_msg_new.header = header_;
   poly_pub_new.publish(poly_msg_new);
 
-  // std::cout << poly_msg_new.polyhedrons[0].points.size() << std::endl;
-
-  int count = poly_msg_new.polyhedrons[0].points.size();
-
-  for (int i = 0; i < count; i++){
-  
-    std::cout << poly_msg_new.polyhedrons[0].points[i].y << std::endl;
-    std::cout << poly_msg_new.polyhedrons[0].points[i].x << std::endl;
-    std::cout << "  " << std::endl;
-
-  }
-  
   point_pub.publish( point_marker );
 
 // ending new part here 
